@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Upload, X } from 'lucide-react'
 import { useAuth } from '../../../contexts/AuthContext'
+import { supabase } from '@/lib/supabaseClient'
 
 export default function AddProduct() {
   const { isAuthenticated } = useAuth()
@@ -21,6 +22,7 @@ export default function AddProduct() {
     image: ''
   })
   const [imagePreview, setImagePreview] = React.useState('')
+  const [imageFile, setImageFile] = React.useState<File | null>(null)
 
   React.useEffect(() => {
     if (!isAuthenticated) {
@@ -42,7 +44,9 @@ export default function AddProduct() {
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
+
     if (file) {
+      setImageFile(file)
       const reader = new FileReader()
       reader.onload = (e) => {
         const result = e.target?.result as string
@@ -53,12 +57,55 @@ export default function AddProduct() {
     }
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // In a real app, this would make an API call
-    console.log('Adding product:', formData)
-    router.push('/admin/products')
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault()
+
+
+  const file = imageFile;
+  let imageUrl = ''
+    console.log("found file",file)
+
+  if (file) {
+    console.log("found file",file)
+    const fileName = `${Date.now()}-${file.name}`
+    const { data, error: uploadError } = await supabase.storage
+      .from('products')
+      .upload(fileName, file)
+
+    if (uploadError) {
+      console.error('Image upload failed:', uploadError.message)
+      alert('Image upload failed')
+      return
+    }
+
+    imageUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/products/${fileName}`
   }
+
+  // 2. Generate slug from name
+  const generateSlug = (name: string) =>
+    name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+
+  const slug = generateSlug(formData.name)
+
+  // 3. Insert product into Supabase DB
+  const { error: insertError } = await supabase.from('products').insert({
+    title: formData.name,
+    description: formData.description,
+    price: parseFloat(formData.price),
+    image_url: imageUrl,
+    slug,
+  })
+
+  if (insertError) {
+    console.error('Insert error:', insertError.message)
+    alert('Failed to save product')
+    return
+  }
+
+  // ✅ Success
+  alert('Product added!')
+  router.push('/admin/products')
+}
 
   return (
     <div className="min-h-screen bg-cream-50">
