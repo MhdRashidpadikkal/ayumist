@@ -3,10 +3,12 @@
 import React from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Leaf, ShoppingCart, Menu, X, Search, User, Heart } from 'lucide-react'
+import { Leaf, ShoppingCart, Menu, X, Search, User, Heart, Facebook, Instagram, Youtube } from 'lucide-react'
 import SearchBar from './SearchBar'
 import { useCart } from '../contexts/CartContext'
 import { useFavorites } from '../contexts/FavoritesContext'
+import Image from 'next/image'
+import logo from '../../public/assets/ayumist-logo.png'
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false)
@@ -34,15 +36,17 @@ const Navigation = () => {
             <span>Free Shipping on orders above ₹1499</span>
           </div>
           <div className="flex items-center space-x-4">
-            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="hover:text-gold-400 transition-colors">
-              📘
-            </a>
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-gold-400 transition-colors">
-              📷
+             <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-gold-400 transition-colors">
+              <Instagram className='w-5'/>
             </a>
             <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="hover:text-gold-400 transition-colors">
-              📺
+              <Youtube className='w-5'/>
             </a>
+            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="hover:text-gold-400 transition-colors">
+              <Facebook className='w-5'/>
+            </a>
+           
+            
           </div>
         </div>
       </div>
@@ -51,9 +55,9 @@ const Navigation = () => {
       <nav className="bg-white/95 backdrop-blur-md shadow-lg sticky top-0 z-50 border-b border-cream-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
-            <Link href="/" className="flex items-center space-x-3 group">
-              <div className="p-2 bg-gradient-to-r from-brown-600 to-brown-700 rounded-lg shadow-lg group-hover:shadow-xl transition-all duration-300 transform group-hover:scale-105">
-                <Leaf className="h-8 w-8 text-cream-100" />
+            <Link href="/" className="flex items-center gap-2 group">
+              <div className="border-brown-700 ">
+                <Image src={logo} alt='logo' width={50} height={50}/>
               </div>
               <div>
                 <span className="text-3xl font-serif font-bold text-brown-800 tracking-wide">

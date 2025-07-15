@@ -41,6 +41,10 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #A08052;
 }
+::-webkit-scrollbar {
+  display: none;
+}
+
 
 /* Smooth transitions for all elements */
 * {
