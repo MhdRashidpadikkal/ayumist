@@ -9,8 +9,6 @@ import { ReviewProvider } from './contexts/ReviewContext'
 import WhatsAppChat from './components/WhatsAppChat'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
-const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair' })
-
 export const metadata: Metadata = {
   title: 'AYUMIST - Premium Ayurvedic Wellness',
   description: 'Discover authentic Ayurvedic products for natural wellness and beauty. Premium quality, 100% natural ingredients.',
@@ -23,7 +21,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
+    <html lang="en" className={`${inter.variable} font-sans`}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
