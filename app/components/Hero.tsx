@@ -127,7 +127,7 @@ const Hero = () => {
                 <div className="hidden lg:block animate-slide-in-right">
                   <div className="relative">
                     <img
-                      src="https://images.pexels.com/photos/3685539/pexels-photo-3685539.jpeg?auto=compress&cs=tinysrgb&w=600"
+                      src="/assets/product-1.jpg"
                       alt="AYUMIST Products"
                       className="w-full max-w-lg mx-auto rounded-3xl shadow-2xl transform hover:scale-105 transition-transform duration-500"
                     />
