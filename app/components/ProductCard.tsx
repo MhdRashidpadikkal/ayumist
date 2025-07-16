@@ -83,7 +83,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         {/* Favorite button */}
         <button
           onClick={handleToggleFavorite}
-          className="absolute top-4 right-4 p-3 rounded-full bg-white/80 backdrop-blur-sm shadow-lg hover:bg-white transition-all duration-300 group"
+          className="absolute top-4 right-4 p-3 rounded-full bg-white/80   shadow-lg hover:bg-white transition-all duration-300 group"
         >
           <Heart className={`h-5 w-5 transition-all duration-300 ${
             isLiked ? 'text-red-500 fill-red-500 scale-110' : 'text-gray-600 hover:text-red-500'
