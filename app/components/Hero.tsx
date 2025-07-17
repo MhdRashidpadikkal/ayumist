@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -150,12 +149,12 @@ const Hero = () => {
                 <div className="custom-next absolute top-1/2 right-4 -translate-y-1/2 z-20 w-9 h-9 bg-white/70 text-black rounded-full flex items-center justify-center cursor-pointer hover:bg-white transition">
                   <ChevronRight className="w-6 h-6" />
                 </div>
-
               </div>
             </SwiperSlide>
           ))}
         </Swiper>
       </div>
+
 
       {/* Scroll indicator */}
       <div className="absolute bottom-8 right-8 animate-bounce z-20">

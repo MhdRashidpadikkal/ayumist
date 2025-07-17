@@ -7,6 +7,7 @@ import { CartProvider } from './contexts/CartContext'
 import { FavoritesProvider } from './contexts/FavoritesContext'
 import { ReviewProvider } from './contexts/ReviewContext'
 import WhatsAppChat from './components/WhatsAppChat'
+import Footer from './components/Footer'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 export const metadata: Metadata = {
@@ -34,6 +35,7 @@ export default function RootLayout({
                 <ReviewProvider>
                   {children}
                   <WhatsAppChat />
+                  <Footer/>
                 </ReviewProvider>
               </FavoritesProvider>
             </CartProvider>

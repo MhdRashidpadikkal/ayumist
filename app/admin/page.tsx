@@ -83,7 +83,7 @@ export default function AdminLogin() {
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-gold-500 focus:border-gold-500 transition-all duration-300 backdrop-blur-sm"
+                    className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-gold-500 focus:border-gold-500 transition-all duration-300  "
                     placeholder="admin@ayumist.com"
                     required
                   />
@@ -99,7 +99,7 @@ export default function AdminLogin() {
                     name="password"
                     value={formData.password}
                     onChange={handleInputChange}
-                    className="w-full pl-10 pr-12 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-gold-500 focus:border-gold-500 transition-all duration-300 backdrop-blur-sm"
+                    className="w-full pl-10 pr-12 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-gold-500 focus:border-gold-500 transition-all duration-300  "
                     placeholder="Enter your password"
                     required
                   />
