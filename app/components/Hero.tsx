@@ -144,7 +144,7 @@ const Hero = () => {
 
       <button
         onClick={prevSlide}
-        className="absolute left-6 top-1/2 transform -translate-y-1/2 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white p-3 rounded-full transition-all duration-300 hover:scale-110 z-20"
+        className="absolute left-6 top-1/2 transform -translate-y-1/2 bg-white/20   hover:bg-white/30 text-white p-3 rounded-full transition-all duration-300 hover:scale-110 z-20"
       >
         <ChevronLeft className="h-6 w-6" />
       </button>
