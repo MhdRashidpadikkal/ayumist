@@ -50,7 +50,7 @@ export default function Home() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
               <div key={index} className="text-center animate-fade-in" style={{animationDelay: `${index * 0.2}s`}}>
-                <div className="bg-white/10 backdrop-blur-sm p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                <div className="bg-white/10   p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
                   <stat.icon className="h-8 w-8" />
                 </div>
                 <div className="text-3xl font-bold font-serif mb-2">{stat.value}</div>
