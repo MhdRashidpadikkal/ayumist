@@ -55,7 +55,6 @@ const Hero = () => {
           }}
           autoplay={{ delay: 5000, disableOnInteraction: false }}
           loop={true}
-          className="rounded-lg"
         >
           {slides.map((slide) => (
             <SwiperSlide key={slide.id}>
@@ -97,7 +96,7 @@ const Hero = () => {
 
                       <Link
                         href="/products"
-                        className="group bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-white px-8 py-4 rounded-full font-semibold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 flex items-center space-x-2"
+                        className="group bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-white px-8 py-4 rounded-full font-semibold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center lg:justify-start space-x-2"
                       >
                         <span>{slide.buttonText}</span>
                         <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
@@ -153,14 +152,6 @@ const Hero = () => {
             </SwiperSlide>
           ))}
         </Swiper>
-      </div>
-
-
-      {/* Scroll indicator */}
-      <div className="absolute bottom-8 right-8 animate-bounce z-20">
-        <div className="w-6 h-10 border-2 border-white/50 rounded-full flex justify-center">
-          <div className="w-1 h-3 bg-white/50 rounded-full mt-2 animate-pulse"></div>
-        </div>
       </div>
     </section>
   );
