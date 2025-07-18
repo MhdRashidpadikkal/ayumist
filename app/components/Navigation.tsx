@@ -117,12 +117,12 @@ const Navigation = () => {
             <div className="flex items-center space-x-4">
               <button 
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
-                className="p-2 text-brown-600 hover:text-brown-800 transition-colors duration-300 group"
+                className="p-2 text-brown-600 hover:text-brown-800 transition-colors duration-300 group hidden lg:block"
               >
                 <Search className="h-5 w-5 group-hover:scale-110 transition-transform duration-300" />
               </button>
 
-              <Link href="/favorites" className="relative p-2 text-brown-600 hover:text-brown-800 transition-colors duration-300 group">
+              <Link href="/favorites" className="relative p-2 text-brown-600 hover:text-brown-800 transition-colors duration-300 group hidden lg:block">
                 <Heart className="h-5 w-5 group-hover:scale-110 transition-transform duration-300" />
                 {getFavoritesCount() > 0 && (
                   <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">

@@ -45,21 +45,21 @@ const Hero = () => {
   ];
 
   return (
-    <section className="relative min-h-screen overflow-hidden">
-      <div className="relative h-screen">
+    <section className="relative overflow-hidden ">
+      <div className="relative lg:h-screen">
         <Swiper
           modules={[Navigation, Autoplay]}
           navigation={{
             nextEl: '.custom-next',
             prevEl: '.custom-prev',
           }}
-          autoplay={{ delay: 4000, disableOnInteraction: false }}
+          autoplay={{ delay: 5000, disableOnInteraction: false }}
           loop={true}
           className="rounded-lg"
         >
           {slides.map((slide) => (
             <SwiperSlide key={slide.id}>
-              <div className={`relative h-screen w-full`}>
+              <div className={`relative h-[70vh] lg:h-screen w-full`}>
                 {/* Gradient + background image overlay */}
                 <div
                   className={`absolute inset-0 bg-gradient-to-br ${slide.gradient}`}
@@ -71,13 +71,13 @@ const Hero = () => {
                 </div>
 
                 {/* Floating blobs */}
-                <div className="absolute top-20 left-20 w-20 h-20 bg-yellow-300/30 rounded-full animate-float"></div>
+                <div className="absolute top-20 left-20 w-20 h-20 bg-yellow-300/30 rounded-full animate-float hidden lg:block"></div>
                 <div
-                  className="absolute bottom-40 right-32 w-32 h-32 bg-amber-200/30 rounded-full animate-float"
+                  className="absolute bottom-40 right-32 w-32 h-32 bg-amber-200/30 rounded-full animate-float hidden lg:block"
                   style={{ animationDelay: "1s" }}
                 ></div>
                 <div
-                  className="absolute top-1/2 left-1/4 w-16 h-16 bg-orange-200/30 rounded-full animate-float"
+                  className="absolute top-1/2 left-1/4 w-16 h-16 bg-orange-200/30 rounded-full animate-float hidden lg:block"
                   style={{ animationDelay: "2s" }}
                 ></div>
 
@@ -142,11 +142,11 @@ const Hero = () => {
                   </div>
                 </div>
 
-                <div className="custom-prev absolute top-1/2 left-4 -translate-y-1/2 z-20 w-9 h-9 bg-white/70 text-black rounded-full flex items-center justify-center cursor-pointer hover:bg-white transition">
-                  <ChevronLeft className="w-6 h-6" />
+                <div className="custom-prev absolute top-1/2 left-4 -translate-y-1/2 z-20 w-9 h-9 bg-white/70 text-black rounded-full flex items-center justify-center cursor-pointer hover:bg-white transition hidden lg:flex">
+                  <ChevronLeft className="w-6 h-6 relative " />
                 </div>
 
-                <div className="custom-next absolute top-1/2 right-4 -translate-y-1/2 z-20 w-9 h-9 bg-white/70 text-black rounded-full flex items-center justify-center cursor-pointer hover:bg-white transition">
+                <div className="custom-next absolute top-1/2 right-4 -translate-y-1/2 z-20 w-9 h-9 bg-white/70 text-black rounded-full flex items-center justify-center cursor-pointer hover:bg-white transition hidden lg:flex">
                   <ChevronRight className="w-6 h-6" />
                 </div>
               </div>
