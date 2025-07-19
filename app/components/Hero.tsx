@@ -141,11 +141,11 @@ const Hero = () => {
                   </div>
                 </div>
 
-                <div className="custom-prev absolute top-1/2 left-4 -translate-y-1/2 z-20 w-9 h-9 bg-white/70 text-black rounded-full flex items-center justify-center cursor-pointer hover:bg-white transition hidden lg:flex">
+                <div className="custom-prev absolute top-1/2 left-4 -translate-y-1/2 z-20 w-9 h-9 bg-white/70 text-black rounded-full  items-center justify-center cursor-pointer hover:bg-white transition hidden lg:flex">
                   <ChevronLeft className="w-6 h-6 relative " />
                 </div>
 
-                <div className="custom-next absolute top-1/2 right-4 -translate-y-1/2 z-20 w-9 h-9 bg-white/70 text-black rounded-full flex items-center justify-center cursor-pointer hover:bg-white transition hidden lg:flex">
+                <div className="custom-next absolute top-1/2 right-4 -translate-y-1/2 z-20 w-9 h-9 bg-white/70 text-black rounded-full  items-center justify-center cursor-pointer hover:bg-white transition hidden lg:flex">
                   <ChevronRight className="w-6 h-6" />
                 </div>
               </div>
