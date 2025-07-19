@@ -54,10 +54,10 @@ const PromotionVideo = () => {
               Your browser does not support the video tag.
             </video>
           ))}
-          <button onClick={handleScrollLeft} className="absolute top-[40%] left-0 bg-black/40 h-20 flex w-10 items-center justify-center rounded-e-[10px]">
+          <button onClick={handleScrollLeft} className="absolute top-[40%] left-0 bg-black/40 h-20 w-10 items-center justify-center rounded-e-[10px] hidden lg:flex">
             <ChevronLeft className="text-[#fff]"/>
             </button>
-          <button onClick={handleScrollRight } className="absolute top-[40%] right-0 bg-black/40 h-20 flex w-10 items-center justify-center rounded-s-[10px]">
+          <button onClick={handleScrollRight } className="absolute top-[40%] right-0 bg-black/40 h-20 w-10 items-center justify-center rounded-s-[10px] hidden lg:flex">
             <ChevronRight className="text-[#fff]" />
           </button>
         </div>
