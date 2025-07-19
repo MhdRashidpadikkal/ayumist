@@ -13,7 +13,7 @@ const promotionVideo: VideoType[] = [
   { video: "/assets/video1.mp4" },
   { video: "/assets/video1.mp4" },
   { video: "/assets/video1.mp4" },
-  { video: "/assets/video1.mp4" },
+ 
 ];
 
 const PromotionVideo = () => {
@@ -37,7 +37,7 @@ const PromotionVideo = () => {
       <div className="flex justify-center">
         <h1 className="text-brown-600 text-[40px] font-[500]">Wacth and Buy</h1>
       </div>
-      <div className=" mx-16 py-5 mt-3 relative">
+      <div className=" py-5 mt-3 relative">
         <div ref={scrollRef} className="flex gap-8 overflow-scroll py-5 scroll-smooth ">
           {promotionVideo.map((item, index) => (
             <video
