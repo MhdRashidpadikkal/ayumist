@@ -14,10 +14,9 @@ export default function AddProduct() {
     name: '',
     description: '',
     price: '',
-    originalPrice: '',
     category: 'skincare',
     tags: '',
-    inStock: true,
+    inStock: 1,
     featured: false,
     image: ''
   })
@@ -38,7 +37,13 @@ export default function AddProduct() {
     const { name, value, type } = e.target
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
+     [name]:
+  type === 'checkbox'
+    ? name === 'inStock'
+      ? (e.target as HTMLInputElement).checked ? 1 : 0 // 👈 convert to int
+      : (e.target as HTMLInputElement).checked
+    : value
+
     }))
   }
 
@@ -88,13 +93,18 @@ export default function AddProduct() {
   const slug = generateSlug(formData.name)
 
   // 3. Insert product into Supabase DB
-  const { error: insertError } = await supabase.from('products').insert({
-    title: formData.name,
-    description: formData.description,
-    price: parseFloat(formData.price),
-    image_url: imageUrl,
-    slug,
-  })
+ const { error: insertError } = await supabase.from('products').insert({
+  title: formData.name,
+  description: formData.description,
+  price: parseFloat(formData.price),
+  category: formData.category,
+  tags: formData.tags,
+  image_url: imageUrl,
+  in_stock: formData.inStock,
+  featured: formData.featured,
+  slug
+})
+
 
   if (insertError) {
     console.error('Insert error:', insertError.message)
@@ -190,17 +200,7 @@ export default function AddProduct() {
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-brown-700 mb-2">Original Price (₹) - Optional</label>
-                <input
-                  type="number"
-                  name="originalPrice"
-                  value={formData.originalPrice}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brown-500 focus:border-brown-500"
-                  placeholder="0"
-                />
-              </div>
+              
             </div>
 
             <div>
@@ -265,7 +265,7 @@ export default function AddProduct() {
                 <input
                   type="checkbox"
                   name="inStock"
-                  checked={formData.inStock}
+                  checked={formData.inStock === 1}
                   onChange={handleInputChange}
                   className="h-4 w-4 text-brown-600 rounded"
                 />

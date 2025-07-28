@@ -1,3 +1,5 @@
+import { Video } from "lucide-react";
+
 export interface Product {
   id: number;
   name: string;
@@ -183,3 +185,5 @@ export const products: Product[] = [
     featured: false
   }
 ];
+
+

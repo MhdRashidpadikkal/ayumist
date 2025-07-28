@@ -3,6 +3,7 @@ import Hero from './components/Hero'
 import ProductCard from './components/ProductCard'
 import { Leaf, Shield, Truck, HeartHandshake, Star, Award, Users, Globe } from 'lucide-react'
 import { products } from './data/products'
+import PromotionVideo from './components/PromotionVideo'
 
 export default function Home() {
   const featuredProducts = products.filter(product => product.featured)
@@ -133,6 +134,10 @@ export default function Home() {
           </div>
         </div>
       </section>
+        {/* video section */}
+        <section>
+          <PromotionVideo/>
+        </section>
 
       {/* Testimonials Section */}
       <section className="py-16 bg-white">
