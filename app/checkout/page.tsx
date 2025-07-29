@@ -50,6 +50,57 @@ export default function Checkout() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement|HTMLSelectElement>) =>
     setFormData({ ...formData, [e.target.name]: e.target.value })
+const handlePlaceOrder = async () => {
+  const orderData = {
+    first_name: formData.firstName,
+    last_name: formData.lastName,
+    email: formData.email,
+    phone: formData.phone,
+    address: formData.address,
+    city: formData.city,
+    state: formData.state,
+    pincode: formData.pincode,
+    payment_method: formData.paymentMethod,
+    total: total,
+    status: 'pending'
+  };
+
+  // 1. Insert order first
+  const { data: order, error: orderError } = await supabase
+    .from('orders')
+    .insert([orderData])
+    .select()
+    .single(); // so we get the inserted row
+
+  if (orderError || !order) {
+    console.error('Order save failed:', orderError?.message);
+    alert('Order failed, please try again.');
+    return;
+  }
+
+  // 2. Prepare order_items array
+  const orderItems = cartItems.map(item => ({
+    order_id: order.id,
+    product_id: item.id,
+     name: item.name,
+    quantity: item.quantity,
+    price: item.price
+  }));
+
+  // 3. Insert into order_items
+  const { error: itemsError } = await supabase
+    .from('order_items')
+    .insert(orderItems);
+
+  if (itemsError) {
+    console.error('Failed to insert order items:', itemsError.message);
+    alert('Order saved, but items failed.');
+  } else {
+    alert('Order placed successfully! 🎉');
+    console.log('Full Order:', order, orderItems);
+  }
+};
+
 
   return (
     <div>
@@ -248,9 +299,13 @@ export default function Checkout() {
               </div>
             </div>
 
-            <button className="w-full bg-gradient-to-r from-brown-500 to-brown-600 text-white py-4 px-8 rounded-full font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-              Place Order - ₹{total.toFixed(0)}
-            </button>
+           <button
+  onClick={handlePlaceOrder}
+  className="w-full bg-gradient-to-r from-brown-500 to-brown-600 text-white py-4 px-8 rounded-full font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+>
+  Place Order - ₹{total.toFixed(0)}
+</button>
+
           </div>
         </div>
       </div>

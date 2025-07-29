@@ -4,6 +4,7 @@ import ProductCard from './components/ProductCard'
 import { Leaf, Shield, Truck, HeartHandshake, Star, Award, Users, Globe } from 'lucide-react'
 import { products } from './data/products'
 import PromotionVideo from './components/PromotionVideo'
+import ProductCardWrapper from './components/ProductCardWrapper'
 
 export default function Home() {
   const featuredProducts = products.filter(product => product.featured)
@@ -43,24 +44,6 @@ export default function Home() {
     <div>
       <Navigation />
       <Hero />
-      
-      {/* Stats Section */}
-      <section className="py-16 bg-gradient-to-r from-brown-600 to-brown-800 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-            {stats.map((stat, index) => (
-              <div key={index} className="text-center animate-fade-in" style={{animationDelay: `${index * 0.2}s`}}>
-                <div className="bg-white/10 backdrop-blur-sm p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                  <stat.icon className="h-8 w-8" />
-                </div>
-                <div className="text-3xl font-bold font-serif mb-2">{stat.value}</div>
-                <div className="text-cream-200">{stat.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-      
       {/* Features Section */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -113,12 +96,14 @@ export default function Home() {
             <p className="text-gray-600 text-lg">Handpicked wellness essentials for your daily routine</p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredProducts.map((product, index) => (
+          <div >
+            {/* {featuredProducts.map((product, index) => (
               <div key={product.id} className="animate-fade-in" style={{animationDelay: `${index * 0.1}s`}}>
                 <ProductCard {...product} />
               </div>
-            ))}
+            ))} */}
+
+            <ProductCardWrapper />
           </div>
 
           <div className="text-center mt-12">
@@ -136,7 +121,9 @@ export default function Home() {
       </section>
         {/* video section */}
         <section>
-          <PromotionVideo/>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+             <PromotionVideo/>
+          </div>
         </section>
 
       {/* Testimonials Section */}
@@ -172,29 +159,7 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* Newsletter Section */}
-      <section className="py-16 bg-gradient-to-r from-brown-600 to-brown-700">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-serif font-bold text-white mb-4">
-            Stay Connected with AYUMIST
-          </h2>
-          <p className="text-cream-100 text-lg mb-8">
-            Get exclusive offers, wellness tips, and new product updates
-          </p>
-          
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-md mx-auto">
-            <input
-              type="email"
-              placeholder="Enter your email"
-              className="flex-1 px-6 py-3 rounded-full text-gray-800 focus:outline-none focus:ring-2 focus:ring-gold-300 shadow-lg"
-            />
-            <button className="bg-gold-500 hover:bg-gold-600 text-white px-8 py-3 rounded-full font-semibold transition-colors duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
-              Subscribe
-            </button>
-          </div>
-        </div>
-      </section>
+      
     </div>
   )
 }

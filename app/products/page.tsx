@@ -299,7 +299,7 @@ export default function Products() {
                   name={product.title}
                   price={product.price}
                   originalPrice={product.originalPrice}
-                  image={product.image_url}
+                  image_url={product.image_url}
                   rating={product.rating || 4}
                   reviews={product.reviews || 0}
                   description={product.description}

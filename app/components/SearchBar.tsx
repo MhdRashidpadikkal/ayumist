@@ -178,7 +178,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onClose, autoFocus = false }) => 
       {/* Backdrop */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
+          className="fixed inset-0 bg-black/20   z-40"
           onClick={() => setIsOpen(false)}
         />
       )}

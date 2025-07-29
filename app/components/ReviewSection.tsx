@@ -246,7 +246,9 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ productId, productName })
                     <div className="flex items-center space-x-2">
                       <h5 className="font-semibold text-brown-800">{review.userName}</h5>
                       {review.verified && (
-                        <CheckCircle className="h-4 w-4 text-green-500" />
+                        <span title="Verified Purchase">
+                          <CheckCircle className="h-4 w-4 text-green-500" />
+                        </span>
                       )}
                     </div>
                     <div className="flex items-center space-x-2">
