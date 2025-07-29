@@ -4,6 +4,7 @@ import ProductCard from './components/ProductCard'
 import { Leaf, Shield, Truck, HeartHandshake, Star, Award, Users, Globe } from 'lucide-react'
 import { products } from './data/products'
 import PromotionVideo from './components/PromotionVideo'
+import ProductCardWrapper from './components/ProductCardWrapper'
 
 export default function Home() {
   const featuredProducts = products.filter(product => product.featured)
@@ -95,12 +96,14 @@ export default function Home() {
             <p className="text-gray-600 text-lg">Handpicked wellness essentials for your daily routine</p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredProducts.map((product, index) => (
+          <div >
+            {/* {featuredProducts.map((product, index) => (
               <div key={product.id} className="animate-fade-in" style={{animationDelay: `${index * 0.1}s`}}>
                 <ProductCard {...product} />
               </div>
-            ))}
+            ))} */}
+
+            <ProductCardWrapper />
           </div>
 
           <div className="text-center mt-12">

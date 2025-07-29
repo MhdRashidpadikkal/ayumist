@@ -1,33 +1,111 @@
-'use client'
+"use client"
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Navigation from '../components/Navigation'
 import { CreditCard, MapPin, Phone, Mail, User, Lock } from 'lucide-react'
+import { supabase } from '@/lib/supabaseClient'
+import { useCart } from '../contexts/CartContext'
+
+interface Product {
+  id: number
+  title: string
+  price: number
+  image_url: string
+}
 
 export default function Checkout() {
-  const [formData, setFormData] = React.useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    address: '',
-    city: '',
-    state: '',
-    pincode: '',
+  const { cartItems } = useCart()
+  const [products, setProducts] = useState<Product[]>([])
+  const [formData, setFormData] = useState({
+    firstName: '', lastName: '', email: '', phone: '',
+    address: '', city: '', state: '', pincode: '',
     paymentMethod: 'card'
   })
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    })
+  useEffect(() => {
+    async function fetchCartProducts() {
+      if (cartItems.length === 0) {
+        setProducts([])
+        return
+      }
+      const ids = cartItems.map(item => item.id)
+      const { data, error } = await supabase
+        .from('products')
+        .select('id, title, price, image_url')
+        .in('id', ids)
+
+      if (error) console.error('Error loading cart products:', error)
+      else setProducts(data || [])
+    }
+    fetchCartProducts()
+  }, [cartItems])
+
+  const subtotal = products.reduce((sum, p) => {
+    const qty = cartItems.find(c => c.id === p.id)?.quantity || 1
+    return sum + p.price * qty
+  }, 0)
+  const shipping = subtotal > 1499 ? 0 : 99
+  const tax = +(subtotal * 0.18).toFixed(2)
+  const total = +(subtotal + shipping + tax).toFixed(2)
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement|HTMLSelectElement>) =>
+    setFormData({ ...formData, [e.target.name]: e.target.value })
+const handlePlaceOrder = async () => {
+  const orderData = {
+    first_name: formData.firstName,
+    last_name: formData.lastName,
+    email: formData.email,
+    phone: formData.phone,
+    address: formData.address,
+    city: formData.city,
+    state: formData.state,
+    pincode: formData.pincode,
+    payment_method: formData.paymentMethod,
+    total: total,
+    status: 'pending'
+  };
+
+  // 1. Insert order first
+  const { data: order, error: orderError } = await supabase
+    .from('orders')
+    .insert([orderData])
+    .select()
+    .single(); // so we get the inserted row
+
+  if (orderError || !order) {
+    console.error('Order save failed:', orderError?.message);
+    alert('Order failed, please try again.');
+    return;
   }
+
+  // 2. Prepare order_items array
+  const orderItems = cartItems.map(item => ({
+    order_id: order.id,
+    product_id: item.id,
+     name: item.name,
+    quantity: item.quantity,
+    price: item.price
+  }));
+
+  // 3. Insert into order_items
+  const { error: itemsError } = await supabase
+    .from('order_items')
+    .insert(orderItems);
+
+  if (itemsError) {
+    console.error('Failed to insert order items:', itemsError.message);
+    alert('Order saved, but items failed.');
+  } else {
+    alert('Order placed successfully! 🎉');
+    console.log('Full Order:', order, orderItems);
+  }
+};
+
 
   return (
     <div>
       <Navigation />
-      
+
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-serif font-bold text-gray-800">Checkout</h1>
@@ -38,38 +116,43 @@ export default function Checkout() {
           {/* Order Summary */}
           <div className="bg-white p-8 rounded-3xl shadow-lg border border-cream-200">
             <h2 className="text-2xl font-serif font-bold text-gray-800 mb-6">Order Summary</h2>
-            
+
             <div className="space-y-4">
-              <div className="flex items-center space-x-4 p-4 bg-cream-50 rounded-2xl">
-                <img
-                  src="https://images.pexels.com/photos/3685530/pexels-photo-3685530.jpeg?auto=compress&cs=tinysrgb&w=800"
-                  alt="AYUMIST Skin Dew Gel"
-                  className="w-16 h-16 object-cover rounded-xl"
-                />
-                <div className="flex-1">
-                  <h3 className="font-semibold text-gray-800">AYUMIST Skin Dew Gel</h3>
-                  <p className="text-gray-600 text-sm">Qty: 1</p>
-                </div>
-                <p className="font-bold text-brown-600">₹899</p>
-              </div>
+              {products.map(prod => {
+                const qty = cartItems.find(c => c.id === prod.id)?.quantity || 1
+                return (
+                  <div key={prod.id} className="flex items-center space-x-4 p-4 bg-cream-50 rounded-2xl">
+                    <img
+                      src={prod.image_url}
+                      alt={prod.title}
+                      className="w-16 h-16 object-cover rounded-xl"
+                    />
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-gray-800">{prod.title}</h3>
+                      <p className="text-gray-600 text-sm">Qty: {qty}</p>
+                    </div>
+                    <p className="font-bold text-brown-600">₹{(prod.price * qty).toFixed(0)}</p>
+                  </div>
+                )
+              })}
             </div>
 
             <div className="mt-6 pt-6 border-t border-gray-200 space-y-3">
               <div className="flex justify-between">
                 <span className="text-gray-600">Subtotal</span>
-                <span className="font-semibold">₹899</span>
+                <span className="font-semibold">₹{subtotal.toFixed(0)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Shipping</span>
-                <span className="text-brown-600 font-semibold">Free</span>
+                <span className="text-brown-600 font-semibold">{shipping === 0 ? 'Free' : `₹${shipping}`}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Tax</span>
-                <span className="font-semibold">₹161</span>
+                <span className="text-gray-600">Tax (18%)</span>
+                <span className="font-semibold">₹{tax.toFixed(0)}</span>
               </div>
               <div className="flex justify-between text-xl font-bold text-gray-800 pt-3 border-t border-gray-200">
                 <span>Total</span>
-                <span>₹1,060</span>
+                <span>₹{total.toFixed(0)}</span>
               </div>
             </div>
 
@@ -78,143 +161,109 @@ export default function Checkout() {
                 <Lock className="h-5 w-5" />
                 <span className="font-semibold">Secure Payment</span>
               </div>
-              <p className="text-sm text-brown-600 mt-1">Your payment information is encrypted and secure</p>
+              <p className="text-sm text-brown-600 mt-1">
+                Your payment info is encrypted and secure
+              </p>
             </div>
           </div>
 
           {/* Checkout Form */}
           <div className="space-y-8">
-            {/* Customer Information */}
             <div className="bg-white p-8 rounded-3xl shadow-lg border border-cream-200">
               <h2 className="text-2xl font-serif font-bold text-gray-800 mb-6 flex items-center space-x-2">
                 <User className="h-6 w-6 text-brown-600" />
                 <span>Customer Information</span>
               </h2>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+                <input
+                  name="firstName"
+                  placeholder="First Name"
+                  value={formData.firstName}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brown-500 focus:border-brown-500 transition-colors"
+                />
+                <input
+                  name="lastName"
+                  placeholder="Last Name"
+                  value={formData.lastName}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brown-500 focus:border-brown-500 transition-colors"
+                />
+                <div className="relative">
+                  <Mail className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
                   <input
-                    type="text"
-                    name="firstName"
-                    value={formData.firstName}
+                    name="email"
+                    placeholder="Email"
+                    value={formData.email}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brown-500 focus:border-brown-500 transition-colors"
-                    placeholder="Enter your first name"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brown-500 focus:border-brown-500 transition-colors"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+                <div className="relative">
+                  <Phone className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />  
                   <input
-                    type="text"
-                    name="lastName"
-                    value={formData.lastName}
+                    name="phone"
+                    placeholder="Phone"
+                    value={formData.phone}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brown-500 focus:border-brown-500 transition-colors"
-                    placeholder="Enter your last name"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brown-500 focus:border-brown-500 transition-colors"
                   />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brown-500 focus:border-brown-500 transition-colors"
-                      placeholder="Enter your email"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
-                  <div className="relative">
-                    <Phone className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brown-500 focus:border-brown-500 transition-colors"
-                      placeholder="Enter your phone number"
-                    />
-                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Shipping Address */}
             <div className="bg-white p-8 rounded-3xl shadow-lg border border-cream-200">
               <h2 className="text-2xl font-serif font-bold text-gray-800 mb-6 flex items-center space-x-2">
                 <MapPin className="h-6 w-6 text-brown-600" />
                 <span>Shipping Address</span>
               </h2>
-              
+
               <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
+                <input
+                  name="address"
+                  placeholder="Address"
+                  value={formData.address}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brown-500 focus:border-brown-500 transition-colors"
+                />
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <input
-                    type="text"
-                    name="address"
-                    value={formData.address}
+                    name="city"
+                    placeholder="City"
+                    value={formData.city}
                     onChange={handleInputChange}
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brown-500 focus:border-brown-500 transition-colors"
-                    placeholder="Enter your full address"
                   />
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">City</label>
-                    <input
-                      type="text"
-                      name="city"
-                      value={formData.city}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brown-500 focus:border-brown-500 transition-colors"
-                      placeholder="City"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">State</label>
-                    <select
-                      name="state"
-                      value={formData.state}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brown-500 focus:border-brown-500 transition-colors"
-                    >
-                      <option value="">Select State</option>
-                      <option value="maharashtra">Maharashtra</option>
-                      <option value="karnataka">Karnataka</option>
-                      <option value="delhi">Delhi</option>
-                      <option value="gujarat">Gujarat</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Pincode</label>
-                    <input
-                      type="text"
-                      name="pincode"
-                      value={formData.pincode}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brown-500 focus:border-brown-500 transition-colors"
-                      placeholder="000000"
-                    />
-                  </div>
+                  <select
+                    name="state"
+                    value={formData.state}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brown-500 focus:border-brown-500 transition-colors"
+                  >
+                    <option value="">State</option>
+                    <option value="maharashtra">Maharashtra</option>
+                    <option value="karnataka">Karnataka</option>
+                  </select>
+                  <input
+                    name="pincode"
+                    placeholder="Pincode"
+                    value={formData.pincode}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brown-500 focus:border-brown-500 transition-colors"
+                  />
                 </div>
               </div>
             </div>
 
-            {/* Payment Method */}
             <div className="bg-white p-8 rounded-3xl shadow-lg border border-cream-200">
               <h2 className="text-2xl font-serif font-bold text-gray-800 mb-6 flex items-center space-x-2">
                 <CreditCard className="h-6 w-6 text-brown-600" />
                 <span>Payment Method</span>
               </h2>
-              
+
               <div className="space-y-4">
-                <div className="flex items-center space-x-3 p-4 border border-gray-200 rounded-xl cursor-pointer hover:bg-cream-50 transition-colors">
+                <label className="flex items-center space-x-2">
                   <input
                     type="radio"
                     name="paymentMethod"
@@ -223,10 +272,9 @@ export default function Checkout() {
                     onChange={handleInputChange}
                     className="h-4 w-4 text-brown-600"
                   />
-                  <CreditCard className="h-5 w-5 text-gray-600" />
-                  <span className="font-medium text-gray-800">Credit/Debit Card</span>
-                </div>
-                <div className="flex items-center space-x-3 p-4 border border-gray-200 rounded-xl cursor-pointer hover:bg-cream-50 transition-colors">
+                  <span>Credit/Debit Card</span>
+                </label>
+                <label className="flex items-center space-x-2">
                   <input
                     type="radio"
                     name="paymentMethod"
@@ -235,9 +283,9 @@ export default function Checkout() {
                     onChange={handleInputChange}
                     className="h-4 w-4 text-brown-600"
                   />
-                  <span className="font-medium text-gray-800">UPI</span>
-                </div>
-                <div className="flex items-center space-x-3 p-4 border border-gray-200 rounded-xl cursor-pointer hover:bg-cream-50 transition-colors">
+                  <span>UPI</span>
+                </label>
+                <label className="flex items-center space-x-2">
                   <input
                     type="radio"
                     name="paymentMethod"
@@ -246,15 +294,18 @@ export default function Checkout() {
                     onChange={handleInputChange}
                     className="h-4 w-4 text-brown-600"
                   />
-                  <span className="font-medium text-gray-800">Cash on Delivery</span>
-                </div>
+                  <span>Cash on Delivery</span>
+                </label>
               </div>
             </div>
 
-            {/* Place Order Button */}
-            <button className="w-full bg-gradient-to-r from-brown-500 to-brown-600 text-white py-4 px-8 rounded-full font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-              Place Order - ₹1,060
-            </button>
+           <button
+  onClick={handlePlaceOrder}
+  className="w-full bg-gradient-to-r from-brown-500 to-brown-600 text-white py-4 px-8 rounded-full font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+>
+  Place Order - ₹{total.toFixed(0)}
+</button>
+
           </div>
         </div>
       </div>

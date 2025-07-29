@@ -1,4 +1,4 @@
-// File: C:\Users\mrith\OneDrive\Desktop\ayumist\ayumist\app\page.tsx
+// File: D:\WORKS\og-ayumist\ayumist\app\page.tsx
 import * as entry from '../../../app/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

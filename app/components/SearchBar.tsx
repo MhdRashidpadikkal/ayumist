@@ -32,14 +32,16 @@ const SearchBar: React.FC<SearchBarProps> = ({ onClose, autoFocus = false }) => 
     if (searchTerm.length > 0) {
       const productSuggestions = products
         .filter(product => 
-          product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          product.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+          product.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          (product.tags && product.tags.split(',').some((tag: string) => tag.trim().toLowerCase().includes(searchTerm.toLowerCase())))
         )
         .slice(0, 5)
-        .map(product => product.name)
-      
+        .map(product => product.title)
+
       const tagSuggestions = Array.from(new Set(
-        products.flatMap(product => product.tags)
+        products
+          .flatMap(product => (product.tags ? product.tags.split(',') : []))
+          .map(tag => tag.trim())
           .filter(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
       )).slice(0, 3)
 

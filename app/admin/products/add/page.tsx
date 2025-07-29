@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Upload, X } from 'lucide-react'
 import { useAuth } from '../../../contexts/AuthContext'
+import { supabase } from '@/lib/supabaseClient'
 
 export default function AddProduct() {
   const { isAuthenticated } = useAuth()
@@ -13,14 +14,14 @@ export default function AddProduct() {
     name: '',
     description: '',
     price: '',
-    originalPrice: '',
     category: 'skincare',
     tags: '',
-    inStock: true,
+    inStock: 1,
     featured: false,
     image: ''
   })
   const [imagePreview, setImagePreview] = React.useState('')
+  const [imageFile, setImageFile] = React.useState<File | null>(null)
 
   React.useEffect(() => {
     if (!isAuthenticated) {
@@ -36,13 +37,21 @@ export default function AddProduct() {
     const { name, value, type } = e.target
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
+     [name]:
+  type === 'checkbox'
+    ? name === 'inStock'
+      ? (e.target as HTMLInputElement).checked ? 1 : 0 // 👈 convert to int
+      : (e.target as HTMLInputElement).checked
+    : value
+
     }))
   }
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
+
     if (file) {
+      setImageFile(file)
       const reader = new FileReader()
       reader.onload = (e) => {
         const result = e.target?.result as string
@@ -53,12 +62,60 @@ export default function AddProduct() {
     }
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // In a real app, this would make an API call
-    console.log('Adding product:', formData)
-    router.push('/admin/products')
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault()
+
+
+  const file = imageFile;
+  let imageUrl = ''
+    console.log("found file",file)
+
+  if (file) {
+    console.log("found file",file)
+    const fileName = `${Date.now()}-${file.name}`
+    const { data, error: uploadError } = await supabase.storage
+      .from('products')
+      .upload(fileName, file)
+
+    if (uploadError) {
+      console.error('Image upload failed:', uploadError.message)
+      alert('Image upload failed')
+      return
+    }
+
+    imageUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/products/${fileName}`
   }
+
+  // 2. Generate slug from name
+  const generateSlug = (name: string) =>
+    name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+
+  const slug = generateSlug(formData.name)
+
+  // 3. Insert product into Supabase DB
+ const { error: insertError } = await supabase.from('products').insert({
+  title: formData.name,
+  description: formData.description,
+  price: parseFloat(formData.price),
+  category: formData.category,
+  tags: formData.tags,
+  image_url: imageUrl,
+  in_stock: formData.inStock,
+  featured: formData.featured,
+  slug
+})
+
+
+  if (insertError) {
+    console.error('Insert error:', insertError.message)
+    alert('Failed to save product')
+    return
+  }
+
+  // ✅ Success
+  alert('Product added!')
+  router.push('/admin/products')
+}
 
   return (
     <div className="min-h-screen bg-cream-50">
@@ -143,17 +200,7 @@ export default function AddProduct() {
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-brown-700 mb-2">Original Price (₹) - Optional</label>
-                <input
-                  type="number"
-                  name="originalPrice"
-                  value={formData.originalPrice}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brown-500 focus:border-brown-500"
-                  placeholder="0"
-                />
-              </div>
+              
             </div>
 
             <div>
@@ -218,7 +265,7 @@ export default function AddProduct() {
                 <input
                   type="checkbox"
                   name="inStock"
-                  checked={formData.inStock}
+                  checked={formData.inStock === 1}
                   onChange={handleInputChange}
                   className="h-4 w-4 text-brown-600 rounded"
                 />

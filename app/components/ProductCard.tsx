@@ -2,17 +2,17 @@
 
 'use client'
 
-import React from 'react'
 import Link from 'next/link'
 import { Star, ShoppingCart, Heart } from 'lucide-react'
 import { useCart } from '../contexts/CartContext'
 import { useFavorites } from '../contexts/FavoritesContext'
+import React from 'react'
 
 interface ProductCardProps {
   id: number;
   name: string;
   price: number;
-  image: string;
+  image_url: string;
   rating: number;
   reviews: number;
   description: string;
@@ -23,7 +23,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   id,
   name,
   price,
-  image,
+  image_url,
   rating,
   reviews,
   description,
@@ -43,7 +43,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    addToCart({ id, name, price, image })
+    addToCart({ id, name, price, image_url })
     setShowAddedToCart(true)
     setTimeout(() => setShowAddedToCart(false), 2000)
   }
@@ -53,6 +53,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
     e.stopPropagation()
     isLiked ? removeFromFavorites(id) : addToFavorites(id)
   }
+
+ 
 
   return (
     <Link
@@ -73,7 +75,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         onMouseLeave={() => setIsHovered(false)}
       >
         <img
-          src={image}
+          src={image_url}
           alt={name}
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
         />
